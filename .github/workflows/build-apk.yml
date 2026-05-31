@@ -9,7 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
+  # 18回目で完全に動作した環境をそのまま引き継いでいます
+  steps:
     - name: 1. リポジトリのコードを取得
       uses: actions/checkout@v4
 
@@ -18,16 +19,15 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: 3. Javaのセット weddings
+    - name: 3. Javaのセットアップ
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: 4. Flutterのセットアップ（Fletが指定するバージョンを直接用意）
+    - name: 4. Flutterのセットアップ
       uses: subosito/flutter-action@v2
       with:
-        # ロボットが欲しがっているバージョンを最初からセットします
         flutter-version: '3.41.7'
 
     - name: 5. Android SDKの環境設定
@@ -38,18 +38,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. Fletアプリ環境の初期化
+    - name: 7. Fletアプリ環境の初期化（あなたのmain.pyを守る修正）
       run: |
-        flet create .
+        # あなたが作ったmain.pyを上書きして消さないように、足りないファイルだけを自動補完させます
+        flet create . --template app
 
-    - name: 8. Flet APKのビルド実行
+    - name: 8. Flet APKのビルド実行（ターゲットを強制指定）
       run: |
-        # 最初からFlutterが揃っているので、質問されずに一発で通ります
-        flet build apk
+        # あなたのmain.pyを確実に指定してビルドします
+        flet build apk --target main.py
 
     - name: 9. 完成したAPKファイルを保存
       uses: actions/upload-artifact@v4
       with:
         name: ogata-field-tools-apk
         path: build/apk/*.apk
-
