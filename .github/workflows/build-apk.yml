@@ -37,19 +37,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. アプリ専用フォルダの構築（カウンターアプリの完全排除）
+    - name: 7. アプリ専用フォルダの構築（真っ白画面の完全修正）
       run: |
-        # 確実に独立した専用フォルダを作成します
         mkdir -p vswr_app
         
-        # 指示書（toml）を作成し、スマホ側で強制上書きを認識させるため内部バージョンを「100」に設定
+        # 依存関係（dependencies）を明記し、確実に画面が描画されるようにします
         cat << 'EOF' > vswr_app/pyproject.toml
         [tool.flet]
         main_script = "main.py"
+        dependencies = ["flet"]
         
         [tool.flet.android]
-        build_number = 100
-        version = "1.0.0"
+        build_number = 101
+        version = "1.0.1"
         EOF
         
         # 本物のVSWR計算ツールのコードを流し込みます
@@ -106,7 +106,6 @@ jobs:
 
     - name: 8. Flet APKのビルド実行
       run: |
-        # 作成した専用フォルダを指定してビルドを実行
         flet build apk vswr_app
 
     - name: 9. 完成したAPKファイルを保存
