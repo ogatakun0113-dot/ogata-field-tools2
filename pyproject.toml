@@ -1,2 +1,3 @@
 [tool.flet]
 main_script = "main.py"
+dependencies = ["flet"]  # ← これが迷子を防ぐ魔法の1行です！
