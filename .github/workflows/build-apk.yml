@@ -37,12 +37,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. 完璧なアプリ専用フォルダの構築（カウンターの完全排除）
+    - name: 7. アプリ専用フォルダの構築（カウンターアプリの完全排除）
       run: |
-        # カウンターが勝手に作られないよう、専用の「vswr_app」フォルダを綺麗に作ります
-        mkdir vswr_app
+        # 確実に独立した専用フォルダを作成します
+        mkdir -p vswr_app
         
-        # 指示書（toml）を作成し、内部バージョンを「100」に強制引き上げしてスマホに強制上書きさせます
+        # 指示書（toml）を作成し、スマホ側で強制上書きを認識させるため内部バージョンを「100」に設定
         cat << 'EOF' > vswr_app/pyproject.toml
         [tool.flet]
         main_script = "main.py"
@@ -106,15 +106,10 @@ jobs:
 
     - name: 8. Flet APKのビルド実行
       run: |
-        # 完全に独立したvswr_appフォルダを対象にしてビルドを走らせます
+        # 作成した専用フォルダを指定してビルドを実行
         flet build apk vswr_app
 
     - name: 9. 完成したAPKファイルを保存
-      uses: actions/upload-artifact@v4
-      with:
-        name: ogata-field-tools-apk
-        path: build/apk/*.apk
-- name: 9. 完成したAPKファイルを保存
       uses: actions/upload-artifact@v4
       with:
         name: ogata-field-tools-apk
