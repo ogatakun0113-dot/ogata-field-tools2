@@ -37,23 +37,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. アプリ専用フォルダの構築（真っ白画面の完全修正）
+    - name: 7. ルート直下にアプリ環境を再構築（フォルダ隔離バグの完全修正）
       run: |
-        mkdir -p vswr_app
-        
-        # 依存関係（dependencies）を明記し、確実に画面が描画されるようにします
-        cat << 'EOF' > vswr_app/pyproject.toml
+        # スマホに古いアプリを強制上書きさせる設定ファイルを作成
+        cat << 'EOF' > pyproject.toml
         [tool.flet]
         main_script = "main.py"
         dependencies = ["flet"]
         
         [tool.flet.android]
-        build_number = 101
-        version = "1.0.1"
+        build_number = 105
+        version = "1.0.5"
         EOF
         
-        # 本物のVSWR計算ツールのコードを流し込みます
-        cat << 'EOF' > vswr_app/main.py
+        # 本物のVSWR計算ツールのコードをルート直下に配置
+        cat << 'EOF' > main.py
         import flet as ft
         import math
 
@@ -104,12 +102,12 @@ jobs:
         ft.app(target=main)
         EOF
 
-    - name: 8. Flet APKのビルド実行
+    - name: 8. Flet APKのビルド実行（ルート上で直に実行）
       run: |
-        flet build apk vswr_app
+        flet build apk
 
     - name: 9. 完成したAPKファイルを保存
       uses: actions/upload-artifact@v4
       with:
         name: ogata-field-tools-apk
-        path: vswr_app/build/apk/*.apk
+        path: build/apk/*.apk
