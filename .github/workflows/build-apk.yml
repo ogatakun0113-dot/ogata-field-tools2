@@ -1,1 +1,55 @@
+name: Build Flet Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. リポジトリのコードを取得
+      uses: actions/checkout@v4
+
+    - name: 2. Pythonのセットアップ
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: 3. Javaのセット weddings
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: 4. Flutterのセットアップ（Fletが指定するバージョンを直接用意）
+      uses: subosito/flutter-action@v2
+      with:
+        # ロボットが欲しがっているバージョンを最初からセットします
+        flutter-version: '3.41.7'
+
+    - name: 5. Android SDKの環境設定
+      uses: android-actions/setup-android@v3
+
+    - name: 6. 必要なパッケージとビルド工具のインストール
+      run: |
+        python -m pip install --upgrade pip
+        pip install "flet[cli]==0.85.2"
+
+    - name: 7. Fletアプリ環境の初期化
+      run: |
+        flet create .
+
+    - name: 8. Flet APKのビルド実行
+      run: |
+        # 最初からFlutterが揃っているので、質問されずに一発で通ります
+        flet build apk
+
+    - name: 9. 完成したAPKファイルを保存
+      uses: actions/upload-artifact@v4
+      with:
+        name: ogata-field-tools-apk
+        path: build/apk/*.apk
 
