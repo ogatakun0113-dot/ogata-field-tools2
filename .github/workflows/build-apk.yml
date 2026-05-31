@@ -114,3 +114,8 @@ jobs:
       with:
         name: ogata-field-tools-apk
         path: build/apk/*.apk
+- name: 9. 完成したAPKファイルを保存
+      uses: actions/upload-artifact@v4
+      with:
+        name: ogata-field-tools-apk
+        path: vswr_app/build/apk/*.apk
