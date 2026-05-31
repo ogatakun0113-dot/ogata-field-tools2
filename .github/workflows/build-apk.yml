@@ -37,20 +37,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. ルート直下にアプリ環境を再構築（フォルダ隔離バグの完全修正）
+    - name: 7. ルート直下にアプリ環境を再構築
       run: |
-        # スマホに古いアプリを強制上書きさせる設定ファイルを作成
         cat << 'EOF' > pyproject.toml
         [tool.flet]
         main_script = "main.py"
         dependencies = ["flet"]
         
         [tool.flet.android]
-        build_number = 105
-        version = "1.0.5"
+        build_number = 110
+        version = "1.1.0"
         EOF
         
-        # 本物のVSWR計算ツールのコードをルート直下に配置
+        # 本物のVSWR計算ツールのコードを流し込みます
         cat << 'EOF' > main.py
         import flet as ft
         import math
@@ -102,9 +101,10 @@ jobs:
         ft.app(target=main)
         EOF
 
-    - name: 8. Flet APKのビルド実行（ルート上で直に実行）
+    - name: 8. Flet APKのビルド実行（★エラーを画面に吐き出すデバッグモード★）
       run: |
-        flet build apk
+        # --no-config や --build-number ではなく、正常に起動エラーを内包して出力するデバッグオプション
+        flet build apk --debug
 
     - name: 9. 完成したAPKファイルを保存
       uses: actions/upload-artifact@v4
