@@ -37,15 +37,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. Fletアプリ環境の初期化
-      run: |
-        flet create . --template app
-
-    - name: 8. Flet APKのビルド実行
+    - name: 7. Flet APKのビルド実行
       run: |
         flet build apk --target main.py
 
-    - name: 9. 完成したAPKファイルを保存
+    - name: 8. 完成したAPKファイルを保存
       uses: actions/upload-artifact@v4
       with:
         name: ogata-field-tools-apk
