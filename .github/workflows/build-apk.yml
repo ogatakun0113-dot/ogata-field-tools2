@@ -37,11 +37,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install "flet[cli]==0.85.2"
 
-    - name: 7. Fletアプリ環境の初期化とコードの死守
+    - name: 7. 完璧なアプリ専用フォルダの構築（カウンターの完全排除）
       run: |
-        # 念のため初期化を行いますが、その直後にあなたのVSWR計算コードで完全に上書きします
-        flet create .
-        cat << 'EOF' > main.py
+        # カウンターが勝手に作られないよう、専用の「vswr_app」フォルダを綺麗に作ります
+        mkdir vswr_app
+        
+        # 指示書（toml）を作成し、内部バージョンを「100」に強制引き上げしてスマホに強制上書きさせます
+        cat << 'EOF' > vswr_app/pyproject.toml
+        [tool.flet]
+        main_script = "main.py"
+        
+        [tool.flet.android]
+        build_number = 100
+        version = "1.0.0"
+        EOF
+        
+        # 本物のVSWR計算ツールのコードを流し込みます
+        cat << 'EOF' > vswr_app/main.py
         import flet as ft
         import math
 
@@ -94,8 +106,8 @@ jobs:
 
     - name: 8. Flet APKのビルド実行
       run: |
-        # 古いFletの仕様に合わせて、カレントディレクトリを指定してビルドします
-        flet build apk .
+        # 完全に独立したvswr_appフォルダを対象にしてビルドを走らせます
+        flet build apk vswr_app
 
     - name: 9. 完成したAPKファイルを保存
       uses: actions/upload-artifact@v4
